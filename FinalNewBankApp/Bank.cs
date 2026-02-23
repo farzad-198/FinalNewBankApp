@@ -92,7 +92,18 @@ internal class Bank
         Console.Write("Val Kontotyp: ");
         Console.ResetColor();
         string accountTypeChoice = Console.ReadLine();
+        if (accountTypeChoice != "1" && accountTypeChoice != "2" && accountTypeChoice != "3")
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Felaktigt val av kontotyp.");
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("Tryck på valfri tangent för att fortsätta...");
+            Console.ResetColor();
+            Console.ReadKey();
+            return;
 
+        }
         Console.ForegroundColor = ConsoleColor.Magenta;
         Console.Write("Ange kontonamn: ");
         Console.ResetColor();
