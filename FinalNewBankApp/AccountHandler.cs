@@ -1,5 +1,4 @@
-﻿
-using FinalNewBankApp.Base;
+﻿using FinalNewBankApp.Base;
 
 namespace FinalNewBankApp;
 
@@ -7,150 +6,139 @@ internal class AccountHandler
 {
     public void ShowMenu(AccountBase account)
     {
+        var actions = new Dictionary<string, Action>
+        {
+            ["1"] = () => Deposit(account),
+            ["2"] = () => Withdraw(account),
+            ["3"] = () => ShowBalance(account),
+            ["4"] = () => ShowTransactions(account),
+        };
+
         while (true)
         {
-            Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("=== Hantera konto ===");
-            Console.ResetColor();
+            PrintMenu(account);
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine($"Kontonamn: {account.AccountName}");
-            Console.WriteLine($"Kontonummer: {account.AccountNumber}");
-            Console.WriteLine($"Date: {account.OpenDate}");
-            Console.ResetColor();
+            string choice = Console.ReadLine()?.Trim() ?? "";
 
-            Console.ForegroundColor = ConsoleColor.DarkBlue;
-            Console.WriteLine();
-            Console.WriteLine("1. Sätt in pengar");
-            Console.WriteLine("2. Ta ut pengar");
-            Console.WriteLine("3. Visa saldo");
-            Console.WriteLine("4. Visa transaktioner");
-            Console.WriteLine("0. Tillbaka till huvudmenyn");
-            Console.ResetColor();
+            if (choice == "0")
+                return;
 
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.Write("Välj ett alternativ: ");
-            Console.ResetColor();
-
-            string menuChoice = Console.ReadLine();
-
-            switch (menuChoice)
+            if (actions.TryGetValue(choice, out var action))
             {
-                case "1":
-                    Deposit(account);
-                    break;
-
-                case "2":
-                    Withdraw(account);
-                    break;
-
-                case "3":
-                    ShowBalance(account);
-                    break;
-
-                case "4":
-                    ShowTransactions(account);
-                    break;
-
-                case "0":
-                    return;
-
-                default:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Felaktigt val, försök igen.");
-                    Console.ResetColor();
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.WriteLine("Tryck på valfri tangent för att fortsätta...");
-                    Console.ResetColor();
-                    Console.ReadKey();
-                    break;
-            }
-        }
-    }
-
-    private void Deposit(AccountBase account)
-    {
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.Write("Ange belopp att sätta in: ");
-        Console.ResetColor();
-        if (decimal.TryParse(Console.ReadLine(), out decimal amount) && amount > 0)
-        {
-            account.Deposit(amount, DateTime.Now);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"{amount} Kr har satts in på kontot.");
-            Console.ResetColor();
-        }
-        else
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Ogiltigt belopp.");
-            Console.ResetColor();
-        }
-        WaitForKey();
-    }
-
-    private void Withdraw(AccountBase account)
-    {
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.Write("Ange belopp att ta ut: ");
-        Console.ResetColor();
-        if (decimal.TryParse(Console.ReadLine(), out decimal amount) && amount > 0)
-        {
-            bool success = account.Withdraw(amount, DateTime.Now);
-            if (success)
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"{amount} Kr har tagits ut från kontot.");
-                Console.ResetColor();
+                action();
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Not enough money to withdraw");
-                Console.ResetColor();
+                PrintError("Felaktigt val, försök igen.");
             }
         }
-        else
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Ogiltigt belopp.");
-            Console.ResetColor();
-        }
-        WaitForKey();
     }
 
-    private void ShowBalance(AccountBase account)
-    {
-        Console.ForegroundColor = ConsoleColor.DarkYellow;
-        Console.WriteLine($"\nNuvarande saldo: {account.Balance()} Kr");
-        Console.ResetColor();
-        WaitForKey();
-    }
-
-    private void ShowTransactions(AccountBase account)
+    private static void PrintMenu(AccountBase account)
     {
         Console.Clear();
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("=== Transaktioner ===");
-        Console.ResetColor();
+
+        WriteLineColored("=== Hantera konto ===", ConsoleColor.Green);
+
+        WriteLineColored($"Kontonamn: {account.AccountName}", ConsoleColor.DarkYellow);
+        WriteLineColored($"Kontonummer: {account.AccountNumber}", ConsoleColor.DarkYellow);
+        WriteLineColored($"Date: {account.OpenDate}", ConsoleColor.DarkYellow);
+
+        WriteLineColored("", ConsoleColor.DarkBlue); // فقط برای فاصله
+        WriteLineColored("1. Sätt in pengar", ConsoleColor.DarkBlue);
+        WriteLineColored("2. Ta ut pengar", ConsoleColor.DarkBlue);
+        WriteLineColored("3. Visa saldo", ConsoleColor.DarkBlue);
+        WriteLineColored("4. Visa transaktioner", ConsoleColor.DarkBlue);
+        WriteLineColored("0. Tillbaka till huvudmenyn", ConsoleColor.DarkBlue);
+
+        WriteColored("Välj ett alternativ: ", ConsoleColor.Magenta);
+    }
+
+    private static void Deposit(AccountBase account)
+    {
+        if (!TryReadPositiveAmount("Ange belopp att sätta in: ", out decimal amount))
+        {
+            PrintError("Ogiltigt belopp.");
+            return;
+        }
+
+        account.Deposit(amount, DateTime.Now);
+        WriteLineColored($"{amount} Kr har satts in på kontot.", ConsoleColor.Green);
+        WaitForKey();
+    }
+
+    private static void Withdraw(AccountBase account)
+    {
+        if (!TryReadPositiveAmount("Ange belopp att ta ut: ", out decimal amount))
+        {
+            PrintError("Ogiltigt belopp.");
+            return;
+        }
+
+        bool success = account.Withdraw(amount, DateTime.Now);
+
+        if (success)
+            WriteLineColored($"{amount} Kr har tagits ut från kontot.", ConsoleColor.Green);
+        else
+            WriteLineColored("Not enough money to withdraw", ConsoleColor.Red);
+
+        WaitForKey();
+    }
+
+    private static void ShowBalance(AccountBase account)
+    {
+        WriteLineColored($"\nNuvarande saldo: {account.Balance()} Kr", ConsoleColor.DarkYellow);
+        WaitForKey();
+    }
+
+    private static void ShowTransactions(AccountBase account)
+    {
+        Console.Clear();
+
+        WriteLineColored("=== Transaktioner ===", ConsoleColor.Green);
 
         Console.ForegroundColor = ConsoleColor.DarkYellow;
         account.PrintTransaction();
         Console.ResetColor();
 
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"\nSaldo: {account.Balance()} kr");
-        Console.ResetColor();
+        WriteLineColored($"\nSaldo: {account.Balance()} kr", ConsoleColor.Cyan);
 
+        WaitForKey();
+    }
+
+    private static bool TryReadPositiveAmount(string prompt, out decimal amount)
+    {
+        WriteColored(prompt, ConsoleColor.Magenta);
+
+        string input = Console.ReadLine()?.Trim() ?? "";
+
+        // نکته: اگر کاربر با کاما/نقطه مشکل داشت، می‌تونیم بعداً اینجا CultureInfo هم اضافه کنیم
+        return decimal.TryParse(input, out amount) && amount > 0;
+    }
+
+    private static void WriteLineColored(string text, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine(text);
+        Console.ResetColor();
+    }
+
+    private static void WriteColored(string text, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.Write(text);
+        Console.ResetColor();
+    }
+
+    private static void PrintError(string message)
+    {
+        WriteLineColored(message, ConsoleColor.Red);
         WaitForKey();
     }
 
     private static void WaitForKey()
     {
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        Console.WriteLine("Tryck på valfri tangent för att fortsätta...");
-        Console.ResetColor();
+        WriteLineColored("Tryck på valfri tangent för att fortsätta...", ConsoleColor.DarkCyan);
         Console.ReadKey();
     }
 }
