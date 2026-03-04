@@ -1,16 +1,28 @@
 ﻿namespace FinalNewBankApp.Base;
 
-internal abstract class AccountBase
+public abstract class AccountBase
 {
-    public DateTime OpenDate { get; }
-    internal Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+    public DateTime OpenDate { get; set; }
+
     protected decimal StartingBalance { get; set; } = 0;
-    internal string AccountName { get; set; } = string.Empty;
-    internal string AccountNumber { get; set; } = string.Empty;
-    internal decimal InterestRate { get; set; } = 0;
 
-    protected List<BankTransaction> bankTransactions = new();
+    public string AccountName { get; set; } = string.Empty;
 
+    public string AccountNumber { get; set; } = string.Empty;
+
+    public decimal InterestRate { get; set; } = 0;
+
+    
+    public List<BankTransaction> BankTransactions { get; set; } = new();
+
+  
+    protected AccountBase()
+    {
+    }
+
+    
     protected AccountBase(decimal startBalance, string accountName, string accountNumber, DateTime openDate)
     {
         StartingBalance = startBalance;
@@ -24,45 +36,43 @@ internal abstract class AccountBase
     internal virtual void Deposit(decimal amount, DateTime date)
     {
         if (amount <= 0)
-        {
             throw new ArgumentException("Amount must be greater than zero", nameof(amount));
-        }
 
         var transaction = new BankTransaction
         {
             Amount = amount,
             TransactionalDate = date,
-            Transaction = "Deposit",
+            Transaction = "Deposit"
         };
-        bankTransactions.Add(transaction);
+
+        BankTransactions.Add(transaction);
     }
 
     internal virtual bool Withdraw(decimal amount, DateTime date)
     {
         if (amount <= 0)
-        {
             throw new ArgumentException("Amount must be greater than zero", nameof(amount));
-        }
 
         var balance = Balance();
+
         if (balance < amount)
-        {
             return false;
-        }
 
         var transaction = new BankTransaction
         {
             Amount = -amount,
             TransactionalDate = date,
-            Transaction = "Withdraw",
+            Transaction = "Withdraw"
         };
 
-        bankTransactions.Add(transaction);
+        BankTransactions.Add(transaction);
+
         return true;
     }
+
     internal virtual void PrintTransaction()
     {
-        if (bankTransactions == null || bankTransactions.Count == 0)
+        if (BankTransactions.Count == 0)
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine("Inga transaktioner ännu.");
@@ -70,13 +80,15 @@ internal abstract class AccountBase
             return;
         }
 
-        foreach (var transaction in bankTransactions)
+        foreach (var transaction in BankTransactions)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
+
             Console.WriteLine(
                 $"Transaction: {transaction.Transaction,-15} " +
                 $"Date: {transaction.TransactionalDate,-20:yyyy-MM-dd HH:mm:ss} " +
                 $"Amount: {transaction.Amount,10} kr");
+
             Console.ResetColor();
         }
     }
@@ -91,7 +103,7 @@ internal abstract class AccountBase
 
         for (DateTime day = start; day <= end; day = day.AddDays(1))
         {
-            foreach (var transaction in bankTransactions)
+            foreach (var transaction in BankTransactions)
             {
                 if (transaction.TransactionalDate.Date == day.Date)
                 {
@@ -104,6 +116,4 @@ internal abstract class AccountBase
 
         return totalInterest;
     }
-
 }
-

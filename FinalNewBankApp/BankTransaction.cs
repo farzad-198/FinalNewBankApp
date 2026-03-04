@@ -1,7 +1,8 @@
 ﻿namespace FinalNewBankApp;
 
-internal class BankTransaction
+public class BankTransaction
 {
+    public int Id { get; set; }
     internal decimal Amount { get; set; }
     internal DateTime TransactionalDate { get; set; }
     public string Transaction { get; set; } = string.Empty;

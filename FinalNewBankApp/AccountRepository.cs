@@ -1,68 +1,93 @@
 ﻿using FinalNewBankApp.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using FinalNewBankApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalNewBankApp
 {
     internal class AccountRepository
     {
-        private readonly List<AccountBase> _accounts = new();
+        private readonly BankDbContext _context;
         private readonly Random _random = new();
 
-        public int Count => _accounts.Count;
-        public bool HasAny() => _accounts.Any();
-        public List<AccountBase> GetAll() => _accounts.ToList();
+        public AccountRepository()
+        {
+            _context = new BankDbContext();
+        }
 
-        public void Add(AccountBase account) => _accounts.Add(account);
-        public void Remove(AccountBase account) => _accounts.Remove(account);
+        public int Count => _context.Accounts.Count();
+
+        public bool HasAny()
+        {
+            return _context.Accounts.Any();
+        }
+
+        public List<AccountBase> GetAll()
+        {
+            return _context.Accounts.ToList();
+        }
+
+        public void Add(AccountBase account)
+        {
+            _context.Accounts.Add(account);
+            _context.SaveChanges();
+        }
+
+        public void Remove(AccountBase account)
+        {
+            _context.Accounts.Remove(account);
+            _context.SaveChanges();
+        }
+
+        public AccountBase? GetAccountById(Guid id)
+        {
+            return _context.Accounts.Find(id);
+        }
 
         public string GenerateUniqueAccountNumber()
         {
             string accountNumber;
+
             do
             {
                 accountNumber = _random.Next(100000000, 999999999).ToString();
             }
-            while (_accounts.Any(a => a.AccountNumber == accountNumber));
+            while (_context.Accounts.Any(a => a.AccountNumber == accountNumber));
 
             return accountNumber;
         }
-
         public void ShowAll()
         {
-            if (!_accounts.Any())
+            var accounts = _context.Accounts.ToList();
+
+            if (!accounts.Any())
             {
-                WriteLineColored("Inga konton finns.", ConsoleColor.Red);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Inga konton finns.");
+                Console.ResetColor();
                 return;
             }
 
-            WriteLineColored("=== Alla konton ===", ConsoleColor.Green);
-
-            var lines = _accounts.Select((account, index) =>
-                $"{index + 1,-3} " +
-                $"AccountName: {account.AccountName,-20} " +
-                $"AccountNumber: {account.AccountNumber,-12} " +
-                $"Saldo: {account.Balance(),-5} Kr " +
-                $"Date: {account.OpenDate}"
-            );
-
-            WriteLinesColored(lines, ConsoleColor.DarkYellow);
-        }
-
-        private static void WriteLineColored(string text, ConsoleColor color)
-        {
-            Console.ForegroundColor = color;
-            Console.WriteLine(text);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("=== Alla konton ===");
             Console.ResetColor();
-        }
 
-        private static void WriteLinesColored(IEnumerable<string> lines, ConsoleColor color)
-        {
-            Console.ForegroundColor = color;
-            foreach (var line in lines)
-                Console.WriteLine(line);
-            Console.ResetColor();
+            int index = 1;
+
+            foreach (var account in accounts)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+
+                Console.WriteLine(
+                    $"{index,-3} " +
+                    $"AccountName: {account.AccountName,-20} " +
+                    $"AccountNumber: {account.AccountNumber,-12} " +
+                    $"Saldo: {account.Balance(),-10} Kr " +
+                    $"Date: {account.OpenDate}"
+                );
+
+                Console.ResetColor();
+                index++;
+            }
         }
     }
 }

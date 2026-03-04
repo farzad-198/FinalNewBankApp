@@ -5,6 +5,7 @@ namespace FinalNewBankApp.Accounts
 {
     internal class UddevallaAccount : AccountBase
     {
+        protected UddevallaAccount() { }
         public UddevallaAccount(decimal startBalance, string accountName, string accountNumber, DateTime dateTime)
             : base(startBalance, accountName, accountNumber, dateTime)
         {
@@ -13,7 +14,7 @@ namespace FinalNewBankApp.Accounts
 
         internal override decimal Balance()
         {
-            var transactionSum = bankTransactions.Sum(x => x.Amount);
+            var transactionSum = BankTransactions.Sum(x => x.Amount);
             return transactionSum + StartingBalance;
         }
 
