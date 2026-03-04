@@ -77,12 +77,14 @@ internal class Bank
         Console.WriteLine("1. Bankkonto");
         Console.WriteLine("2. ISK-konto");
         Console.WriteLine("3. Uddevalla-konto");
+        Console.WriteLine("4. Studentkonto");
+        Console.WriteLine("5. Sparkonto");
         Console.ResetColor();
 
         WriteColored("Val Kontotyp: ", ConsoleColor.Magenta);
         string accountTypeChoice = Console.ReadLine()?.Trim() ?? "";
 
-        if (accountTypeChoice is not ("1" or "2" or "3"))
+        if (accountTypeChoice is not ("1" or "2" or "3" or "4" or "5"))
         {
             WriteLineColored("Felaktigt val av kontotyp.", ConsoleColor.Red);
             WaitForKey();
@@ -93,9 +95,15 @@ internal class Bank
         string accountName = Console.ReadLine() ?? "";
 
         string accountNumber = _accountRepository.GenerateUniqueAccountNumber();
+
         decimal initialBalance = ReadInitialBalance();
 
-        var account = CreateAccountByType(accountTypeChoice, accountName, accountNumber, initialBalance);
+        var account = AccountFactory.CreateAccount(
+            accountTypeChoice,
+            initialBalance,
+            accountName,
+            accountNumber,
+            DateTime.Now);
 
         _accountRepository.Add(account);
 
@@ -121,19 +129,6 @@ internal class Bank
         return decimal.TryParse(input, out decimal amount) && amount >= 0 ? amount : 0m;
     }
 
-    private static AccountBase CreateAccountByType(string accountType, string accountName, string accountNumber, decimal initialBalance)
-    {
-        var openDate = DateTime.Now;
-
-        return accountType switch
-        {
-            "1" => new BankAccount(initialBalance, accountName, accountNumber, openDate),
-            "2" => new IskAccount(initialBalance, accountName, accountNumber, openDate),
-            "3" => new UddevallaAccount(initialBalance, accountName, accountNumber, openDate),
-            _ => throw new ArgumentException("Invalid account type")
-        };
-    }
-
     private static void PrintAccountCreated(AccountBase account, string accountType)
     {
         string kontotyp = accountType switch
@@ -141,6 +136,8 @@ internal class Bank
             "1" => "Bankkonto",
             "2" => "ISK-konto",
             "3" => "Uddevalla-konto",
+            "4" => "Studentkonto",
+            "5" => "Sparkonto",
             _ => "Konto"
         };
 
