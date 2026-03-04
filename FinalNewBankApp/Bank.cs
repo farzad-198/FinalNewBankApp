@@ -1,15 +1,18 @@
-﻿using FinalNewBankApp;
-using FinalNewBankApp.Accounts;
+﻿using FinalNewBankApp.Accounts;
 using FinalNewBankApp.Base;
-using System;
-using System.Collections.Generic;
 
 namespace FinalNewBankApp;
 
 internal class Bank
 {
-    private readonly AccountRepository _accountRepository = new();
-    private readonly AccountHandler _accountHandler = new();
+    private readonly AccountRepository _accountRepository;
+    private readonly AccountHandler _accountHandler;
+
+    public Bank()
+    {
+        _accountRepository = new AccountRepository();
+        _accountHandler = new AccountHandler(_accountRepository);
+    }
 
     internal void ShowBankMenu()
     {
@@ -95,6 +98,7 @@ internal class Bank
         var account = CreateAccountByType(accountTypeChoice, accountName, accountNumber, initialBalance);
 
         _accountRepository.Add(account);
+
         PrintAccountCreated(account, accountTypeChoice);
 
         WaitForKey();
@@ -113,6 +117,7 @@ internal class Bank
         WriteColored("Skriv Startbelopp: ", ConsoleColor.Yellow);
 
         string input = Console.ReadLine()?.Trim() ?? "";
+
         return decimal.TryParse(input, out decimal amount) && amount >= 0 ? amount : 0m;
     }
 
@@ -142,11 +147,13 @@ internal class Bank
         WriteLineColored($"=== Ditt {kontotyp} har skapats ===", ConsoleColor.Green);
 
         Console.ForegroundColor = ConsoleColor.DarkYellow;
+
         Console.WriteLine(
             $"AccountName: {account.AccountName}   " +
             $"AccountNumber: {account.AccountNumber}   " +
             $"Saldo: {account.Balance()} Kr   " +
             $"Date: {account.OpenDate}");
+
         Console.ResetColor();
     }
 
@@ -160,10 +167,14 @@ internal class Bank
         }
 
         var account = SelectAccountFromList("\nVälj konto (nummer i listan)(eller 0 för att avbryta):");
-        if (account is null) return;
+
+        if (account is null)
+            return;
 
         _accountRepository.Remove(account);
+
         WriteLineColored($"Konto {account.AccountNumber} har tagits bort.", ConsoleColor.Green);
+
         WaitForKey();
     }
 
@@ -177,7 +188,9 @@ internal class Bank
         }
 
         var account = SelectAccountFromList("\nVälj konto (nummer i listan)(eller 0 för att avbryta):");
-        if (account is null) return;
+
+        if (account is null)
+            return;
 
         _accountHandler.ShowMenu(account);
     }
@@ -210,15 +223,15 @@ internal class Bank
         return accounts[selection - 1];
     }
 
+    private void RunSeedTest()
+    {
+        InterestTestSeed.Run();
+    }
+
     private static void WaitForKey()
     {
         WriteLineColored("Tryck på valfri tangent för att fortsätta...", ConsoleColor.DarkCyan);
         Console.ReadKey();
-    }
-
-    private void RunSeedTest()
-    {
-        InterestTestSeed.Run();
     }
 
     private static void WriteLineColored(string text, ConsoleColor color)

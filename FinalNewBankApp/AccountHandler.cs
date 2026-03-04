@@ -4,6 +4,13 @@ namespace FinalNewBankApp;
 
 internal class AccountHandler
 {
+    private readonly AccountRepository _repository;
+
+    public AccountHandler(AccountRepository repository)
+    {
+        _repository = repository;
+    }
+
     public void ShowMenu(AccountBase account)
     {
         var actions = new Dictionary<string, Action>
@@ -34,27 +41,7 @@ internal class AccountHandler
         }
     }
 
-    private static void PrintMenu(AccountBase account)
-    {
-        Console.Clear();
-
-        WriteLineColored("=== Hantera konto ===", ConsoleColor.Green);
-
-        WriteLineColored($"Kontonamn: {account.AccountName}", ConsoleColor.DarkYellow);
-        WriteLineColored($"Kontonummer: {account.AccountNumber}", ConsoleColor.DarkYellow);
-        WriteLineColored($"Date: {account.OpenDate}", ConsoleColor.DarkYellow);
-
-        WriteLineColored("", ConsoleColor.DarkBlue); 
-        WriteLineColored("1. Sätt in pengar", ConsoleColor.DarkBlue);
-        WriteLineColored("2. Ta ut pengar", ConsoleColor.DarkBlue);
-        WriteLineColored("3. Visa saldo", ConsoleColor.DarkBlue);
-        WriteLineColored("4. Visa transaktioner", ConsoleColor.DarkBlue);
-        WriteLineColored("0. Tillbaka till huvudmenyn", ConsoleColor.DarkBlue);
-
-        WriteColored("Välj ett alternativ: ", ConsoleColor.Magenta);
-    }
-
-    private static void Deposit(AccountBase account)
+    private void Deposit(AccountBase account)
     {
         if (!TryReadPositiveAmount("Ange belopp att sätta in: ", out decimal amount))
         {
@@ -63,11 +50,14 @@ internal class AccountHandler
         }
 
         account.Deposit(amount, DateTime.Now);
+
+        _repository.SaveChanges();   // مهم
+
         WriteLineColored($"{amount} Kr har satts in på kontot.", ConsoleColor.Green);
         WaitForKey();
     }
 
-    private static void Withdraw(AccountBase account)
+    private void Withdraw(AccountBase account)
     {
         if (!TryReadPositiveAmount("Ange belopp att ta ut: ", out decimal amount))
         {
@@ -78,9 +68,15 @@ internal class AccountHandler
         bool success = account.Withdraw(amount, DateTime.Now);
 
         if (success)
+        {
+            _repository.SaveChanges();   // مهم
+
             WriteLineColored($"{amount} Kr har tagits ut från kontot.", ConsoleColor.Green);
+        }
         else
+        {
             WriteLineColored("Not enough money to withdraw", ConsoleColor.Red);
+        }
 
         WaitForKey();
     }
@@ -97,9 +93,7 @@ internal class AccountHandler
 
         WriteLineColored("=== Transaktioner ===", ConsoleColor.Green);
 
-        Console.ForegroundColor = ConsoleColor.DarkYellow;
         account.PrintTransaction();
-        Console.ResetColor();
 
         WriteLineColored($"\nSaldo: {account.Balance()} kr", ConsoleColor.Cyan);
 
@@ -112,7 +106,6 @@ internal class AccountHandler
 
         string input = Console.ReadLine()?.Trim() ?? "";
 
-        
         return decimal.TryParse(input, out amount) && amount > 0;
     }
 
@@ -140,5 +133,26 @@ internal class AccountHandler
     {
         WriteLineColored("Tryck på valfri tangent för att fortsätta...", ConsoleColor.DarkCyan);
         Console.ReadKey();
+    }
+
+    private static void PrintMenu(AccountBase account)
+    {
+        Console.Clear();
+
+        WriteLineColored("=== Konto ===", ConsoleColor.Green);
+        WriteLineColored($"Namn: {account.AccountName}", ConsoleColor.Cyan);
+        WriteLineColored($"Kontonummer: {account.AccountNumber}", ConsoleColor.Cyan);
+        WriteLineColored($"Öppnat: {account.OpenDate:d}", ConsoleColor.DarkYellow);
+        WriteLineColored($"Saldo: {account.Balance()} kr", ConsoleColor.DarkYellow);
+        Console.WriteLine();
+
+        WriteLineColored("1) Sätt in pengar", ConsoleColor.Magenta);
+        WriteLineColored("2) Ta ut pengar", ConsoleColor.Magenta);
+        WriteLineColored("3) Visa saldo", ConsoleColor.Magenta);
+        WriteLineColored("4) Visa transaktioner", ConsoleColor.Magenta);
+        WriteLineColored("0) Tillbaka", ConsoleColor.Magenta);
+        Console.WriteLine();
+
+        WriteColored("Välj ett alternativ: ", ConsoleColor.Magenta);
     }
 }

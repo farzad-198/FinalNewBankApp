@@ -89,5 +89,10 @@ namespace FinalNewBankApp
                 index++;
             }
         }
+
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
+        }
     }
 }
