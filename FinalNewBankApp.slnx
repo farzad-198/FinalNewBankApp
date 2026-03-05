@@ -1,8 +1,16 @@
 <Solution>
-  <Folder Name="/1.Domain/" />
-  <Folder Name="/2.Application/" />
-  <Folder Name="/3.Infrastructure/" />
-  <Folder Name="/4.Presentation/" />
+  <Folder Name="/1.Domain/">
+    <Project Path="DbEntites/DbEntites.csproj" Id="1adbed5c-d06e-4fea-91ad-1a9f9ddecbda" />
+  </Folder>
+  <Folder Name="/2.Application/">
+    <Project Path="Application/ApplicationService.csproj" Id="f455b906-cb3b-4572-8567-4f62e65c37d3" />
+  </Folder>
+  <Folder Name="/3.Infrastructure/">
+    <Project Path="Ef_Sql/Ef_Sql.csproj" Id="1f339cc5-6586-47be-9a9b-da9d683d1a26" />
+  </Folder>
+  <Folder Name="/4.Presentation/">
+    <Project Path="BanckApp/BanckApp.csproj" Id="0476d7ff-1c34-4916-87d5-d8d4ad58933f" />
+  </Folder>
   <Folder Name="/5.Tests/" />
   <Project Path="FinalNewBankApp/FinalNewBankApp.csproj" />
 </Solution>
