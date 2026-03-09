@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\ApplicationService.csproj" />
+    <ProjectReference Include="..\DbEntites\DbEntites.csproj" />
     <ProjectReference Include="..\FinalNewBankApp\FinalNewBankApp.csproj" />
   </ItemGroup>
 
