@@ -4,11 +4,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Application\Services.csproj" />
     <ProjectReference Include="..\Ef_Sql\EFCore.csproj" />
-    <ProjectReference Include="..\FinalNewBankApp\FinalNewBankApp.csproj" />
   </ItemGroup>
 
 </Project>

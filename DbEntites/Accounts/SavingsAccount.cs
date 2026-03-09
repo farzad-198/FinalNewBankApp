@@ -2,7 +2,7 @@
 
 namespace FinalNewBankApp.Accounts;
 
-internal class SavingsAccount : AccountBase
+public class SavingsAccount : AccountBase
 {
     protected SavingsAccount() { }
 
@@ -12,7 +12,7 @@ internal class SavingsAccount : AccountBase
         InterestRate = 0.05m;
     }
 
-    internal override decimal Balance()
+    public override decimal Balance()
     {
         var transactionSum = BankTransactions.Sum(x => x.Amount);
         return transactionSum + StartingBalance;

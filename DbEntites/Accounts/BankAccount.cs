@@ -2,9 +2,9 @@
 
 namespace FinalNewBankApp.Accounts;
 
-internal class BankAccount : AccountBase
+public class BankAccount : AccountBase
 {
-    // سازنده برای Entity Framework
+   
     protected BankAccount() { }
 
     public BankAccount(decimal startBalance, string accountName, string accountNumber, DateTime dateTime)
@@ -13,7 +13,7 @@ internal class BankAccount : AccountBase
         InterestRate = 0.01m;
     }
 
-    internal override decimal Balance()
+    public override decimal Balance()
     {
         var transactionSum = BankTransactions.Sum(x => x.Amount);
         return transactionSum + StartingBalance;

@@ -31,9 +31,9 @@ public abstract class AccountBase
         OpenDate = openDate;
     }
 
-    internal abstract decimal Balance();
+   public abstract decimal Balance();
 
-    internal virtual void Deposit(decimal amount, DateTime date)
+    public virtual void Deposit(decimal amount, DateTime date)
     {
         if (amount <= 0)
             throw new ArgumentException("Amount must be greater than zero", nameof(amount));
@@ -48,7 +48,7 @@ public abstract class AccountBase
         BankTransactions.Add(transaction);
     }
 
-    internal virtual bool Withdraw(decimal amount, DateTime date)
+    public virtual bool Withdraw(decimal amount, DateTime date)
     {
         if (amount <= 0)
             throw new ArgumentException("Amount must be greater than zero", nameof(amount));
@@ -70,7 +70,7 @@ public abstract class AccountBase
         return true;
     }
 
-    internal virtual void PrintTransaction()
+    public virtual void PrintTransaction()
     {
         if (BankTransactions.Count == 0)
         {
@@ -93,7 +93,7 @@ public abstract class AccountBase
         }
     }
 
-    internal decimal CalculateYearlyInterest(int year)
+    public decimal CalculateYearlyInterest(int year)
     {
         decimal balance = StartingBalance;
         decimal totalInterest = 0m;

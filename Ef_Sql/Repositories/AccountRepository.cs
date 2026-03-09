@@ -1,10 +1,10 @@
-﻿using FinalNewBankApp.Base;
+using FinalNewBankApp.Base;
 using FinalNewBankApp.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalNewBankApp
 {
-    internal class AccountRepository
+    public class AccountRepository
     {
         private readonly BankDbContext _context;
         private readonly Random _random = new();

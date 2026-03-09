@@ -1,13 +1,14 @@
-﻿using FinalNewBankApp.Accounts;
+using FinalNewBankApp.Accounts;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace FinalNewBankApp
 {
-    internal class InterestTestSeed
+    public static class InterestTestSeed
     {
-        internal static void Run()
+        public static void Run()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("=== Interest Test Seed ===");

@@ -11,6 +11,8 @@
   <Folder Name="/4.Presentation/">
     <Project Path="BanckApp/BanckApp.csproj" Id="0476d7ff-1c34-4916-87d5-d8d4ad58933f" />
   </Folder>
-  <Folder Name="/5.Tests/" />
+  <Folder Name="/5.Tests/">
+    <File Path="FinalNewBankApp/InterestTestSeed.cs" />
+  </Folder>
   <Project Path="FinalNewBankApp/FinalNewBankApp.csproj" />
 </Solution>

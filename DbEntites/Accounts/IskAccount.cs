@@ -2,7 +2,7 @@
 
 namespace FinalNewBankApp.Accounts;
 
-internal class IskAccount : AccountBase
+public class IskAccount : AccountBase
 {
    protected IskAccount()
     {
@@ -14,7 +14,7 @@ internal class IskAccount : AccountBase
         InterestRate = 0.02m;
     }
 
-    internal override decimal Balance()
+    public override decimal Balance()
     {
         var transactionSum = BankTransactions.Sum(x => x.Amount);
         return transactionSum + StartingBalance;

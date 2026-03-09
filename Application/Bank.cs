@@ -1,9 +1,8 @@
-﻿using FinalNewBankApp.Accounts;
 using FinalNewBankApp.Base;
 
 namespace FinalNewBankApp;
 
-internal class Bank
+public class Bank
 {
     private readonly AccountRepository _accountRepository;
     private readonly AccountHandler _accountHandler;
@@ -14,7 +13,7 @@ internal class Bank
         _accountHandler = new AccountHandler(_accountRepository);
     }
 
-    internal void ShowBankMenu()
+    public void ShowBankMenu()
     {
         var actions = new Dictionary<string, Action>
         {
@@ -22,7 +21,7 @@ internal class Bank
             ["2"] = DeleteAccount,
             ["3"] = () => { _accountRepository.ShowAll(); WaitForKey(); },
             ["4"] = ManageAccount,
-            ["5"] = () => { RunSeedTest(); WaitForKey(); },
+            ["5"] = RunSeedTest,
             ["0"] = () => { WriteLineColored("Avsluta...", ConsoleColor.Red); }
         };
 
@@ -223,6 +222,7 @@ internal class Bank
     private void RunSeedTest()
     {
         InterestTestSeed.Run();
+        WaitForKey();
     }
 
     private static void WaitForKey()

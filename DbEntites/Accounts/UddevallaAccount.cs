@@ -3,7 +3,7 @@
 
 namespace FinalNewBankApp.Accounts
 {
-    internal class UddevallaAccount : AccountBase
+    public class UddevallaAccount : AccountBase
     {
         protected UddevallaAccount() { }
         public UddevallaAccount(decimal startBalance, string accountName, string accountNumber, DateTime dateTime)
@@ -12,7 +12,7 @@ namespace FinalNewBankApp.Accounts
             InterestRate = 0.05m;
         }
 
-        internal override decimal Balance()
+        public override decimal Balance()
         {
             var transactionSum = BankTransactions.Sum(x => x.Amount);
             return transactionSum + StartingBalance;
